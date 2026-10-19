@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4f6fa">
+<meta name="description" content="うどん配送問題の入力・出力を読み込み、経路、積載数、祈願、移動力を再生・検証するビジュアライザ。">
+<title>うどん配送 ビジュアライザ</title>
+<style>
+:root{color-scheme:light;--bg:#f4f6fa;--paper:#fff;--text:#24334c;--sub:#66778f;--line:#d3dcea;--blue:#2864e8;--blue-hover:#1c50c7;--soft-blue:#edf3ff;--orange:#dc8b18;--green:#16845e;--red:#c63e48;--purple:#8057ca;--teal:#158c97}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Yu Gothic UI",Meiryo,sans-serif}button,input,select,textarea{font:inherit;color:inherit}button,input,select{min-height:30px}button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:4px;padding:4px 10px;white-space:nowrap}button:hover{background:#f0f4fb;border-color:#a4b7d4}button:disabled{opacity:.45;cursor:default}button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}button.primary:hover{background:var(--blue-hover)}button.quiet{background:transparent;border-color:transparent;color:var(--sub);min-height:24px;padding:1px 5px;font-size:11px}button.quiet:hover{color:var(--blue);background:var(--soft-blue)}button.active{background:var(--soft-blue);border-color:#8aacef;color:#194fae}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #5488ef;outline-offset:2px}input:not([type=checkbox]):not([type=range]),select{border:1px solid var(--line);border-radius:3px;background:#fff;padding:3px 7px;min-width:0}input[type=range]{accent-color:var(--blue);min-width:40px;margin:0}input[type=checkbox]{accent-color:var(--blue);min-height:auto;margin:0}label.check{display:inline-flex;gap:6px;align-items:center;white-space:nowrap;cursor:pointer}textarea{display:block;width:100%;resize:vertical;min-height:112px;height:112px;padding:8px 9px;border:1px solid var(--line);border-radius:3px;background:#fff;font:11px/1.5 Consolas,"SFMono-Regular",monospace;tab-size:2;white-space:pre;overflow:auto}a{color:var(--blue)}.page{max-width:1064px;margin:0 auto;padding:22px 20px 30px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}.page-header h1{font-size:21px;line-height:1.4;font-weight:650;letter-spacing:.025em;margin:0}.page-header p{margin:3px 0 0;color:var(--sub);font-size:12px}.header-mark{display:inline-flex;align-items:center;justify-content:center;width:31px;height:31px;background:#fff4dd;border:1px solid #efd5a1;border-radius:7px;color:#ad6b15;margin-right:8px;font-size:21px;vertical-align:-2px}.header-actions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.panel{background:var(--paper);border:1px solid var(--line);border-radius:5px;margin-bottom:9px}.help summary,.problem summary{color:#245dbf;cursor:pointer;padding:8px 12px;font-weight:600}.help[open] summary,.problem[open] summary{padding-bottom:3px}.help-body{display:grid;grid-template-columns:1fr 1fr;gap:27px;padding:3px 15px 13px;font-size:12px;line-height:1.75}.help h2{font-size:12px;margin:5px 0 4px}.help ol,.help ul{padding-left:19px;margin:0 0 8px}.help p{margin:3px 0 7px}.help code,.problem code{font-family:Consolas,monospace;color:#244d8c;background:#f1f5fb;padding:0 3px;border-radius:2px}.small{font-size:11px;color:var(--sub)}.problem{margin-bottom:9px;font-size:12px}.problem .problem-body{padding:1px 15px 12px;line-height:1.8}.problem-body p{margin:5px 0}.io-panel{padding:10px 11px 9px}.io-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}.seed-tools,.file-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.seed-tools label{font-size:11px;color:var(--sub)}#seed{width:94px}#caseCount{width:58px}#outputSelect{width:205px;max-width:100%;font-size:11px}.io-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field-header{display:flex;justify-content:space-between;align-items:center;gap:7px;min-height:25px}.field-label{font-size:11px;color:#375578;font-weight:600;letter-spacing:.02em}.field-actions{display:flex;align-items:center;gap:1px}.io-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:var(--sub)}.notice{padding:9px 12px;display:flex;align-items:flex-start;gap:10px;font-size:12px}.notice[hidden]{display:none}.notice.error{border-color:#eabcc0;background:#fff7f7;color:#a72b35}.notice.warning{border-color:#e8d4a6;background:#fffaf0;color:#8a5c16}.notice-text{flex:1;overflow-wrap:anywhere}.notice button{font-size:11px;background:transparent;border-color:currentColor;min-height:26px;color:inherit}.playback{padding:9px 11px 10px}.playback-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.speed-control{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--sub)}#speed{width:105px}#speedValue{min-width:82px;color:var(--text);font-variant-numeric:tabular-nums}.view-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--sub)}#zoom{font-size:11px;min-height:27px;padding:1px 5px}.timeline-row{display:flex;gap:6px;align-items:center}.timeline-buttons{display:flex;gap:3px;flex:none}.timeline-buttons button{min-width:28px;min-height:28px;padding:1px 5px;line-height:1.4}.timeline-buttons #play{min-width:56px}.timeline-row #timeline{flex:1;width:100%;min-width:50px}.time-control{display:flex;align-items:center;gap:4px;color:var(--sub);font-size:11px}.time-control #time{width:63px;min-height:27px;font-variant-numeric:tabular-nums}.time-total{min-width:45px;white-space:nowrap;font-variant-numeric:tabular-nums}.scene{padding:0;overflow:hidden}.scene-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid #e4e9f1;padding:10px 13px 9px}.scene-status{display:flex;gap:17px;align-items:baseline;flex-wrap:wrap;font-size:12px;font-variant-numeric:tabular-nums}.scene-status strong{font-weight:600}.status-badge{display:inline-flex;align-items:center;gap:5px;border-radius:3px;background:#f0f3f8;padding:2px 7px;color:#566b85;font-size:11px;white-space:nowrap}.status-badge::before{content:"";width:6px;height:6px;background:currentColor;border-radius:50%}.status-badge.valid{background:#e9f7f1;color:#167453}.status-badge.partial{background:#fff3da;color:#8a601c}.status-badge.invalid{background:#fdecef;color:#b53440}.scene-grid{display:grid;grid-template-columns:minmax(0,1fr) 224px;gap:0}.board-column{min-width:0;padding:11px 9px 9px 12px}.board-scroll{position:relative;width:100%;max-height:790px;overflow:auto;background:#fff;scrollbar-width:thin}.board-scroll canvas{display:block;touch-action:manipulation;cursor:crosshair;max-width:none}.board-empty{display:flex;align-items:center;justify-content:center;aspect-ratio:1;color:var(--sub);background:#f8fafc;border:1px dashed var(--line);padding:20px;text-align:center}.board-empty[hidden]{display:none}.legend{display:flex;justify-content:center;gap:14px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--sub);padding:6px 0 2px}.legend-item{display:inline-flex;gap:5px;align-items:center;white-space:nowrap}.mark{width:10px;height:10px;display:inline-block;flex:none}.mark.shop{background:#fff2d8;border:1.5px solid var(--orange)}.mark.done{background:#35a879;border:1.5px solid #16845e}.mark.factory{background:var(--teal);transform:rotate(45deg);width:9px;height:9px}.mark.shrine{color:var(--purple);font-size:14px;font-weight:700;line-height:10px;text-align:center}.mark.player{background:var(--blue);border-radius:50%;box-shadow:0 0 0 2px #c0d3fb}.board-hint{font-size:11px;color:var(--sub);text-align:center;margin:5px 0 0;min-height:18px}.sidebar{padding:12px 13px 10px 11px;border-left:1px solid #e5eaf2;background:#fcfdff;min-width:0}.sidebar section+section{border-top:1px solid #e1e7f0;padding-top:10px;margin-top:11px}.sidebar h2{font-size:11px;font-weight:600;letter-spacing:.04em;color:#617590;margin:0 0 8px}.carry-heading{display:flex;justify-content:space-between;align-items:baseline}.carry-value{font-variant-numeric:tabular-nums;font-size:15px;font-weight:600}.bowls{display:flex;gap:8px;margin:5px 0 10px}.bowl-slot{position:relative;width:auto;flex:1;max-width:49px;min-width:0;height:43px;border:1px solid #dce3ee;background:#f2f5f9;border-radius:5px;opacity:.7}.bowl-slot .noodles{position:absolute;color:#c7d0dc;line-height:1;top:1px;left:12px;font-size:25px}.bowl-slot .bowl{position:absolute;left:10px;top:22px;width:28px;height:12px;border-radius:1px 1px 15px 15px;background:#c6d0dd}.bowl-slot .bowl::after{content:"";position:absolute;width:12px;height:2px;background:inherit;top:13px;left:8px;border-radius:1px}.bowl-slot.filled{background:#fff8e9;border-color:#e5bd72;opacity:1}.bowl-slot.filled .noodles{color:#d6a039}.bowl-slot.filled .bowl{background:#e6a23b}.stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:5px 0;font-size:12px}.stat-row span:first-child{color:var(--sub)}.stat-row strong{font-weight:600;font-variant-numeric:tabular-nums}.stat-row .power-value{font-size:19px;color:#2656aa}.upgrade-track{height:4px;background:#e7edf6;border-radius:2px;margin:8px 0 5px;overflow:hidden}.upgrade-track span{display:block;height:100%;background:#5d88e8;width:0}.upgrade-label{font-size:11px;color:var(--sub);line-height:1.6}.delivery-bar{height:5px;background:#e8eef2;overflow:hidden;margin:7px 0 5px;border-radius:3px}.delivery-bar span{display:block;height:100%;background:#3ba079;width:0}.final-score{font-size:23px;line-height:1.4;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.015em}.result-detail{font-size:11px;color:var(--sub);margin:3px 0 0}.cell-detail{font-size:12px;min-height:40px;overflow-wrap:anywhere}.operation-list{display:flex;flex-direction:column;gap:2px}.operation-list button{display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;border-color:transparent;background:transparent;min-height:25px;padding:2px 5px;font-size:11px;color:#586c87;overflow:hidden}.operation-list button .op-number{min-width:29px;font-variant-numeric:tabular-nums;color:#8b99ad}.operation-list button.current{background:#eaf1ff;color:#1c51b4;border-color:#c3d4f5}.operation-list button.future{color:#8492a6}.operation-list button.invalid{background:#fff0f2;color:var(--red)}.operation-list button span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.manual-toolbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 13px;border-top:1px solid #e0e7f0;background:#f8faff;font-size:11px}.manual-toolbar .manual-text{color:var(--sub);flex:1;min-width:210px}.manual-toolbar button{font-size:11px;min-height:27px}.manual-feedback{color:#a06412;font-size:11px;margin-top:3px}.manual-feedback[hidden]{display:none}.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11px;color:#8290a6;margin:11px 1px 0}.key{display:inline-block;background:#f0f3f8;border:1px solid #dfe5ef;border-radius:3px;padding:0 4px;color:#62758f;font:10px/1.6 Consolas,monospace}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:5;background:#263b59;color:#fff;border-radius:5px;padding:8px 16px;font-size:12px;box-shadow:0 3px 12px #1f3d6c25;max-width:90vw;text-align:center}#toast[hidden]{display:none}[hidden]{display:none!important}
+@media(max-width:800px){.page{padding:14px 12px 25px}.scene-grid{grid-template-columns:minmax(0,1fr) 195px}.sidebar{padding:11px 10px}.help-body{gap:17px}.page-header h1{font-size:19px}.file-tools{gap:5px}#outputSelect{width:180px}.scene-status{gap:10px}}
+@media(max-width:650px){.page{padding:12px 8px 22px}.page-header{align-items:flex-start;flex-wrap:wrap}.page-header h1{font-size:17px}.page-header p{font-size:11px}.header-mark{width:26px;height:26px;font-size:18px;margin-right:5px}.header-actions{max-width:none;width:100%;justify-content:flex-end}.help-body{grid-template-columns:1fr;gap:0;padding:3px 12px 10px}.help-body>div+div{border-top:1px solid #e5eaf1;padding-top:6px}.io-grid{grid-template-columns:1fr;gap:8px}.io-toolbar{gap:8px}.seed-tools{gap:5px}.file-tools{width:100%}#outputSelect{flex:1;min-width:100px;width:auto}.scene-grid{grid-template-columns:1fr}.sidebar{border-left:0;border-top:1px solid #e1e7f0;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}.sidebar section+section{margin:0;border:0;padding:0}.sidebar section:first-child{grid-row:span 2}.sidebar .log-section{grid-column:1/-1;border-top:1px solid #e1e7f0;padding-top:10px}.operation-list{display:grid;grid-template-columns:1fr 1fr;gap:3px}.board-column{padding:8px}.board-scroll{max-height:660px}.timeline-row{gap:4px;flex-wrap:wrap}.timeline-row #timeline{order:3;flex-basis:100%;margin-top:5px}.time-control{margin-left:auto}.playback-top{gap:8px}.view-controls{gap:9px}.speed-control{gap:5px}#speed{width:85px}.board-hint{font-size:10px}.scene-status{font-size:11px}.manual-toolbar .manual-text{min-width:190px}.footer{font-size:10px}.notice{flex-wrap:wrap}.notice-text{min-width:180px}}
+@media(pointer:coarse){button{min-height:40px}.timeline-buttons button{min-height:39px;min-width:34px}.view-controls label.check{min-height:36px}input[type=number],select{min-height:36px}textarea{font-size:16px;line-height:1.4}.field-actions button.quiet{min-height:34px;padding:4px 6px}.manual-toolbar button{min-height:38px}.operation-list button{min-height:35px}input[type=range]{min-height:32px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="page-header">
+    <div><h1><span class="header-mark" aria-hidden="true">≋</span>うどん配送 ビジュアライザ</h1><p>経路をたどって、配送・積載・祈願を確認する</p></div>
+    <div class="header-actions"><button id="sample" type="button">実行例を読み込む</button><button id="problemLink" class="quiet" type="button">問題文・形式</button></div>
+  </header>
+  <details id="problem" class="panel problem">
+    <summary>問題文・入出力形式</summary>
+    <div class="problem-body"><p><b>100×100</b>の盤面に、うどん店 <code>a</code> が50軒、製麺所 <code>b</code> が5か所、神社 <code>c</code> が1か所あります。左上 <code>(0,0)</code> から、うどんを持たずに開始します。<code>x</code> は下向き、<code>y</code> は右向きです。</p><p><b>移動:</b> <code>1 x y</code>。マンハッタン距離が <code>P = 1 + floor(log₂(D+1))</code> 以下のマスへ移動できます。初期値は <code>D=0, P=1</code> です。<b>操作:</b> <code>2</code>。製麺所では1個受取（最大3個）、店では1個納品、神社では1個消費して <code>D</code> を1増やします。空荷での納品・祈願、満載時の受取、地面での操作は違反です。</p><p><b>入力:</b> 1行目に <code>N M K</code>、続いて盤面をN行。<b>出力:</b> 1行目に操作数 <code>L</code>、続いて操作をL行（最大100,000操作）。得点は <code>(M − 配送済み店舗数) × 10000 + L</code>、小さい方が良い値です。</p></div>
+  </details>
+  <details id="help" class="panel help" open>
+    <summary>使い方</summary>
+    <div class="help-body">
+      <div><h2>まず使ってみる</h2><ol><li><b>Seed → 生成</b>でInputを作るか、入力ファイルを読み込みます。</li><li>solverの出力を<b>Output</b>に貼り付けます。編集後に自動で反映されます。</li><li><b>▶ 再生</b>で経路を再生。スライダーで時刻、Speedで速度を変えられます。</li></ol><h2>ファイル・保存</h2><ul><li><b>一括保存:</b> Seedから連続する入力をZIPで保存します。同じSeedなら同じ入力になります（このページ独自のSeedです）。</li><li><b>出力フォルダ:</b> 複数の出力を切り替えます。<b>Inputは自動では変わらない</b>ので、対応する入力も読み込んでください。</li><li><b>PNG保存:</b> 現在の盤面と状態を画像に保存します。入力・出力は各欄から保存できます。</li></ul></div>
+      <div><h2>盤面と表示</h2><p>橙の四角は未配送の店、緑の四角は配送済みの店、青緑の菱形は製麺所、紫の鳥居は神社です。青い丸が配達員で、薄青のマスは今の移動可能範囲です。マスをクリックすると座標と施設を確認できます。</p><p><b>現在スコア</b>は選択中の時刻までの操作で計算します。右の<b>最終結果</b>は読み込んだ出力全体の結果です。違反がある場合は直前の状態まで再生でき、原因と出力行を表示します。</p><p><b>手動操作</b>を有効にすると、盤面クリック・矢印キーで移動、Enter / Spaceで受取・納品・祈願できます。新しい操作を行うと、<b>現在の時刻より先の出力を置き換えます</b>。</p><p class="small">通常時: <span class="key">Space</span> 再生・停止 / <span class="key">←</span> <span class="key">→</span> 1操作ずつ / <span class="key">Home</span> <span class="key">End</span> 先頭・末尾。拡大すると細かいマスも選びやすくなります。</p></div>
+    </div>
+  </details>
+  <section class="panel io-panel" aria-label="入力と出力">
+    <div class="io-toolbar">
+      <div class="seed-tools"><label for="seed">Seed</label><input id="seed" type="number" min="0" max="4294967295" step="1" value="0"><button id="generate" class="primary" type="button">生成</button><label for="caseCount">#cases</label><input id="caseCount" type="number" min="1" max="1000" value="10"><button id="batch" type="button">一括保存</button></div>
+      <div class="file-tools"><button id="inputOpen" type="button">入力ファイル</button><button id="outputOpen" type="button">出力ファイル</button><button id="directoryOpen" class="primary" type="button">出力フォルダ</button><select id="outputSelect" aria-label="出力ファイルを切り替え" disabled><option>出力ファイル未選択</option></select></div>
+    </div>
+    <div class="io-grid">
+      <div><div class="field-header"><label for="input" class="field-label">Input</label><div class="field-actions"><button class="quiet" id="copyInput" type="button">コピー</button><button class="quiet" id="saveInput" type="button">保存</button></div></div><textarea id="input" spellcheck="false" wrap="off" aria-label="問題の入力" placeholder="100 50 5&#10;...盤面100行..."></textarea></div>
+      <div><div class="field-header"><label for="output" class="field-label">Output</label><div class="field-actions"><button class="quiet" id="copyOutput" type="button">コピー</button><button class="quiet" id="saveOutput" type="button">保存</button></div></div><textarea id="output" spellcheck="false" wrap="off" aria-label="solverの出力" placeholder="L&#10;1 x y&#10;2&#10;..."></textarea></div>
+    </div>
+    <div class="io-foot"><span id="sourceName">solverの実行例</span><span>入力・出力はブラウザ内で処理します</span></div>
+    <input type="file" id="inputFile" accept=".txt,.in,text/plain" hidden><input type="file" id="outputFile" accept=".txt,.out,.ans,text/plain" multiple hidden><input type="file" id="outputDirectory" webkitdirectory multiple hidden>
+  </section>
+  <div id="notice" class="panel notice" hidden><div class="notice-text" id="noticeText"></div><button id="selectError" type="button" hidden>エラー行を選択</button></div>
+  <section class="panel playback" aria-label="再生操作">
+    <div class="playback-top"><div class="speed-control"><label for="speed">Speed</label><input id="speed" type="range" min="0" max="100" value="50"><output id="speedValue" for="speed">32 操作/秒</output></div><div class="view-controls"><label class="check"><input id="showTrail" type="checkbox" checked>軌跡</label><label class="check"><input id="showRange" type="checkbox" checked>移動範囲</label><label class="check"><input id="showIds" type="checkbox">番号</label><label for="zoom" class="sr-only">盤面の拡大率</label><select id="zoom"><option value="1">全体表示</option><option value="1.5">150%</option><option value="2">200%</option><option value="3">300%</option><option value="4">400%</option></select><button id="exportPng" class="primary" type="button">PNG保存</button></div></div>
+    <div class="timeline-row"><div class="timeline-buttons"><button id="first" type="button" aria-label="先頭へ" title="先頭へ">|◀</button><button id="prev" type="button" aria-label="1操作戻る" title="1操作戻る">◀</button><button id="play" class="primary" type="button" aria-label="再生">▶ 再生</button><button id="next" type="button" aria-label="1操作進む" title="1操作進む">▶</button><button id="last" type="button" aria-label="末尾へ" title="末尾へ">▶|</button></div><input id="timeline" type="range" min="0" max="0" value="0" aria-label="再生する操作数"><div class="time-control"><label for="time">t</label><input id="time" type="number" min="0" max="0" value="0"><span class="time-total" id="timeTotal">/ 0</span></div></div>
+  </section>
+  <section class="panel scene" aria-label="盤面と状態">
+    <div class="scene-header"><div class="scene-status"><span>t = <strong id="metricTime">0</strong></span><span>現在スコア = <strong id="metricScore">—</strong></span><span>配送 <strong id="metricServed">—</strong></span></div><span id="statusBadge" class="status-badge">入力待ち</span></div>
+    <div class="scene-grid">
+      <div class="board-column"><div id="boardViewport" class="board-scroll"><canvas id="board" aria-label="配送盤面。マスをクリックして座標を確認できます。" role="img"></canvas><div class="board-empty" id="boardEmpty" hidden>Inputを入力すると盤面を表示します</div></div><div class="legend"><span class="legend-item"><i class="mark shop" aria-hidden="true"></i>未配送</span><span class="legend-item"><i class="mark done" aria-hidden="true"></i>配送済み</span><span class="legend-item"><i class="mark factory" aria-hidden="true"></i>製麺所</span><span class="legend-item"><i class="mark shrine" aria-hidden="true">⛩</i>神社</span><span class="legend-item"><i class="mark player" aria-hidden="true"></i>配達員</span></div><p class="board-hint" id="boardHint">左上 (0,0) / 下がx、右がy / クリックでマスの情報を表示</p></div>
+      <aside class="sidebar" aria-label="現在の状態と結果">
+        <section><div class="carry-heading"><h2>手持ちのうどん</h2><span class="carry-value" id="heldValue">0 / 3</span></div><div class="bowls" aria-hidden="true"><div class="bowl-slot"><span class="noodles">≋</span><span class="bowl"></span></div><div class="bowl-slot"><span class="noodles">≋</span><span class="bowl"></span></div><div class="bowl-slot"><span class="noodles">≋</span><span class="bowl"></span></div></div><div class="stat-row"><span>現在座標</span><strong id="positionValue">(0, 0)</strong></div><div class="stat-row"><span>祈願 D</span><strong id="donatedValue">0</strong></div><div class="stat-row"><span>移動力 P</span><strong id="powerValue" class="power-value">1</strong></div><div class="upgrade-track"><span id="upgradeBar"></span></div><div class="upgrade-label" id="upgradeLabel">あと1回の祈願で P = 2</div></section>
+        <section><h2>配送状況</h2><div class="stat-row"><span>配送済み</span><strong id="deliveredValue">0 / 50</strong></div><div class="delivery-bar"><span id="deliveryBar"></span></div><div class="small" id="remainingValue">未配送 50店舗</div></section>
+        <section><h2>最終結果</h2><div class="final-score" id="finalScore">—</div><p class="result-detail" id="finalDetail">出力を読み込んでください</p></section>
+        <section><h2>選択中のマス</h2><div class="cell-detail" id="cellDetail">マスをクリックすると<br>施設と納品状況を確認できます</div></section>
+        <section class="log-section"><h2>操作の前後</h2><div class="operation-list" id="operationList"></div></section>
+      </aside>
+    </div>
+    <div class="manual-toolbar"><label class="check"><input id="manual" type="checkbox">手動操作</label><div class="manual-text" id="manualHint">有効にすると、盤面クリックで移動できます。新しい操作で現在時刻より先を置き換えます。<div id="manualFeedback" class="manual-feedback" role="status" hidden></div></div><button id="act" type="button" disabled>受取・納品・祈願 (2)</button></div>
+  </section>
+  <footer class="footer"><span id="problemSize">100 × 100 / 店 50 / 製麺所 5 / 積載上限 3</span><span id="validationSummary">入力・出力を検証しています</span></footer>
+  <div id="liveStatus" class="sr-only" aria-live="polite"></div>
+</main>
+<div id="toast" role="status" hidden></div>
+<script id="sample-data" type="application/json">{"input": "100 50 5\n....................................................a...............................................\n....................................................................................................\n...............................a....................................................................\n....................a...........................................................a...................\n....................................................................................................\n..........................................................a.........................................\n........a....................................................................................a......\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n..................................a...........................b.....................................\n......................a.............................................................................\n....................................................................................................\n.................................................a..................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n.................................................................................................a..\n....................................................................................................\n......b......................................a......................................................\n....................................................................................................\n....................................................................................................\n..........................................................................a.........................\n...........................................................................a........................\n....................................a...............................................................\n.......................................a............................................................\n..a.................................................................................................\n....................................................................................................\n....................................................................................................\n.......a......................................................a.....................................\n....................................................................................................\n.................................a..................................................................\n....................................................................................................\n.................a..................................................................................\n.......................................a............................................................\n....................................................................................................\n....................................................................................................\n.....a......a...................................a..................a................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n........a...........................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n.........................................................................................a..........\n....................................................................................................\n....................................................................................................\n..................a.................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................a..........................................a....................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n...........................................................................a........................\n................................................................a...................................\n....................................................................................................\n................................................aa..................................................\n....................................................................................................\n...............a....................................................................................\n.........................................................a..........................................\n.......................................a............................................................\n....................................................................................................\n........................a...........................................................................\n....................................................................................................\n...................................................................................................a\n............................................................................a.......................\n....b............................................a..................................................\n.........................................a..........................................................\n....................................................................................................\n...................................................a................................................\n...........................................................................a........................\n................................................................................................a...\n....................................................................................................\n....................................................................................................\n...........................................a........................................................\n....................................................................................................\n.................................................a..................................................\n....................................................................................................\n............................................a.......................................................\n.........................................................c...................b......................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n...............b..........................................................................a.........\n....................................................................................................\n....................................................................................................\n....................................................................................................\n....................................................................................................\n", "output": "621\n1 1 0\n1 2 0\n1 3 0\n1 4 0\n1 5 0\n1 6 0\n1 7 0\n1 8 0\n1 9 0\n1 10 0\n1 11 0\n1 12 0\n1 13 0\n1 14 0\n1 15 0\n1 16 0\n1 17 0\n1 18 0\n1 19 0\n1 20 0\n1 20 1\n1 20 2\n1 20 3\n1 20 4\n1 20 5\n1 20 6\n2\n2\n2\n1 21 6\n1 22 6\n1 23 6\n1 24 6\n1 25 6\n1 26 6\n1 27 6\n1 28 6\n1 29 6\n1 30 6\n1 30 7\n2\n1 31 7\n1 32 7\n1 33 7\n1 34 7\n1 35 7\n1 36 7\n1 37 7\n1 38 7\n1 39 7\n1 40 7\n1 41 7\n1 42 7\n1 43 7\n1 44 7\n1 45 7\n1 46 7\n1 46 8\n2\n1 47 8\n1 48 8\n1 49 8\n1 50 8\n1 51 8\n1 52 8\n1 53 8\n1 54 8\n1 55 8\n1 56 8\n1 57 8\n1 58 8\n1 59 8\n1 60 8\n1 61 8\n1 62 8\n1 63 8\n1 64 8\n1 65 8\n1 66 8\n1 67 8\n1 68 8\n1 69 8\n1 70 8\n1 70 9\n1 70 10\n1 70 11\n1 70 12\n1 70 13\n1 70 14\n1 70 15\n2\n1 71 15\n1 72 15\n1 73 15\n1 74 15\n1 75 15\n1 76 15\n1 77 15\n1 78 15\n1 79 15\n1 80 15\n1 81 15\n1 82 15\n1 83 15\n1 84 15\n1 85 15\n1 86 15\n1 87 15\n1 88 15\n1 89 15\n1 90 15\n1 91 15\n1 92 15\n1 93 15\n1 94 15\n1 95 15\n2\n2\n2\n1 94 15\n1 93 15\n1 92 15\n1 91 15\n1 91 16\n1 91 17\n1 91 18\n1 91 19\n1 91 20\n1 91 21\n1 91 22\n1 91 23\n1 91 24\n1 91 25\n1 91 26\n1 91 27\n1 91 28\n1 91 29\n1 91 30\n1 91 31\n1 91 32\n1 91 33\n1 91 34\n1 91 35\n1 91 36\n1 91 37\n1 91 38\n1 91 39\n1 91 40\n1 91 41\n1 91 42\n1 91 43\n1 91 44\n1 91 45\n1 91 46\n1 91 47\n1 91 48\n1 91 49\n1 91 50\n1 91 51\n1 91 52\n1 91 53\n1 91 54\n1 91 55\n1 91 56\n1 91 57\n2\n2\n2\n1 91 60\n1 91 63\n1 91 66\n1 91 69\n1 91 72\n1 91 75\n1 91 77\n2\n2\n2\n1 91 74\n1 91 71\n1 91 68\n1 91 65\n1 91 62\n1 91 59\n1 91 57\n2\n2\n2\n1 91 60\n1 91 63\n1 91 66\n1 91 69\n1 91 72\n1 91 75\n1 91 77\n2\n2\n2\n1 91 74\n1 91 71\n1 91 68\n1 91 65\n1 91 62\n1 91 59\n1 91 57\n2\n2\n2\n1 91 61\n1 91 65\n1 91 69\n1 91 73\n1 91 77\n2\n2\n2\n1 91 73\n1 91 69\n1 91 65\n1 91 61\n1 91 57\n2\n2\n2\n1 91 61\n1 91 65\n1 91 69\n1 91 73\n1 91 77\n2\n2\n2\n1 91 73\n1 91 69\n1 91 65\n1 91 61\n1 91 57\n2\n2\n2\n1 91 62\n1 91 67\n1 91 72\n1 91 77\n2\n2\n2\n1 90 73\n1 90 68\n1 90 63\n1 90 58\n1 90 53\n1 90 48\n1 90 44\n2\n1 86 43\n2\n1 88 46\n1 88 49\n2\n1 91 51\n1 91 56\n1 91 61\n1 91 66\n1 91 71\n1 91 76\n1 91 77\n2\n2\n2\n1 86 77\n1 81 77\n1 81 72\n1 81 67\n1 81 62\n1 81 57\n1 81 52\n1 81 51\n2\n1 78 49\n2\n1 73 49\n1 71 52\n1 71 57\n2\n1 76 57\n1 81 57\n1 86 57\n1 91 57\n1 91 62\n1 91 67\n1 91 72\n1 91 77\n2\n2\n2\n1 95 78\n1 95 83\n1 95 88\n1 95 90\n2\n1 90 90\n1 85 90\n1 83 93\n1 83 96\n2\n1 78 96\n1 76 99\n2\n1 81 99\n1 86 99\n1 91 99\n1 91 94\n1 91 89\n1 91 84\n1 91 79\n1 91 77\n2\n2\n2\n1 86 77\n1 81 77\n1 76 77\n1 71 77\n1 66 77\n1 61 77\n1 56 77\n1 53 79\n1 53 84\n1 53 89\n2\n1 58 89\n1 60 86\n1 60 81\n1 60 79\n2\n1 65 79\n1 65 75\n2\n1 70 75\n1 75 75\n1 80 75\n1 85 75\n1 90 75\n1 91 77\n2\n2\n1 86 77\n1 82 76\n1 82 75\n2\n1 77 75\n1 77 76\n2\n1 82 76\n1 87 76\n1 91 77\n2\n2\n2\n1 86 77\n1 81 77\n1 76 77\n1 71 77\n1 66 77\n1 66 72\n1 66 67\n1 66 64\n2\n1 68 61\n1 68 56\n1 68 51\n1 68 49\n2\n1 68 48\n2\n1 73 48\n1 78 48\n1 78 43\n1 78 38\n1 78 33\n1 78 28\n1 78 23\n1 78 18\n1 78 13\n1 78 8\n1 78 4\n2\n2\n2\n1 73 4\n1 68 4\n1 63 4\n1 60 6\n1 60 11\n1 60 16\n1 60 21\n1 60 26\n1 60 31\n1 60 36\n2\n1 65 36\n1 70 36\n1 72 39\n2\n1 77 39\n1 79 41\n2\n1 78 37\n1 78 32\n1 78 27\n1 78 22\n1 78 17\n1 78 12\n1 78 7\n1 78 4\n2\n2\n2\n1 74 5\n1 74 10\n1 74 15\n1 74 20\n1 74 24\n2\n1 69 24\n1 64 24\n1 59 24\n1 56 22\n1 56 18\n2\n1 51 18\n1 46 18\n1 41 18\n1 36 18\n1 34 17\n2\n1 29 17\n1 24 17\n1 20 16\n1 20 11\n1 20 6\n2\n2\n2\n1 15 6\n1 10 6\n1 6 7\n1 6 8\n2\n1 3 10\n1 3 15\n1 3 20\n2\n1 8 20\n1 12 21\n1 12 22\n2\n1 17 22\n1 20 20\n1 20 15\n1 20 10\n1 20 6\n2\n2\n2\n1 25 6\n1 27 3\n1 27 2\n2\n1 32 2\n1 37 2\n1 38 5\n2\n1 38 10\n1 38 12\n2\n1 33 12\n1 28 12\n1 23 12\n1 20 10\n1 20 6\n2\n2\n2\n1 25 6\n1 30 6\n1 32 9\n1 32 14\n1 32 19\n1 32 24\n1 32 29\n1 32 33\n2\n1 27 33\n1 25 36\n2\n1 26 39\n2\n1 21 39\n1 16 39\n1 11 39\n1 11 44\n1 11 49\n1 11 54\n1 11 59\n1 11 62\n2\n2\n2\n1 14 60\n1 14 55\n1 14 50\n1 14 49\n2\n1 19 49\n1 20 45\n2\n1 15 45\n1 10 45\n1 5 45\n1 5 50\n1 5 55\n1 5 58\n2\n1 10 58\n1 11 62\n2\n2\n2\n1 16 62\n1 21 62\n1 26 62\n1 30 62\n2\n1 25 62\n1 24 66\n1 24 71\n1 24 75\n2\n1 23 74\n2\n1 18 74\n1 13 74\n1 11 71\n1 11 66\n1 11 62\n2\n2\n2\n1 16 62\n1 18 65\n1 18 70\n1 18 75\n1 18 80\n1 18 85\n1 18 90\n1 18 95\n1 18 97\n2\n1 13 97\n1 8 97\n1 6 94\n1 6 93\n2\n1 3 91\n1 3 86\n1 3 81\n1 3 80\n2\n1 8 80\n1 11 78\n1 11 73\n1 11 68\n1 11 63\n1 11 62\n2\n2\n2\n1 6 62\n1 1 62\n1 0 58\n1 0 53\n1 0 52\n2\n1 2 49\n1 2 44\n1 2 39\n1 2 34\n1 2 31\n2\n1 7 31\n1 11 32\n1 11 34\n2\n1 11 39\n1 11 44\n1 11 49\n1 11 54\n1 11 59\n1 11 62\n2\n2\n2\n1 16 62\n1 21 62\n1 26 62\n1 31 62\n1 36 62\n1 38 65\n1 38 67\n2\n1 38 62\n1 38 57\n1 38 52\n1 38 48\n2\n1 35 46\n1 35 41\n1 35 39\n2\n"}</script>
+<script id="udon-core">
+(() => {
+  'use strict';
+  const MAX_OPS = 100000;
+  const integer = s => /^[+-]?\d+$/.test(s) && Number.isSafeInteger(Number(s));
+  const clean = text => String(text).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').trimEnd();
+  function fail(message, line = 1) { const e = new Error(message); e.line = line; throw e; }
+  function parseInput(text) {
+    const raw = clean(text);
+    if (!raw.trim()) fail('Inputを入力してください。');
+    if (raw.length > 1000000) fail('Inputが大きすぎます。');
+    const lines = raw.split('\n');
+    const header = lines[0].trim().split(/\s+/);
+    if (header.length !== 3 || !header.every(integer)) fail('1行目は N M K の3整数にしてください。');
+    const [n, m, k] = header.map(Number);
+    if (n < 1 || n > 200 || m < 0 || k < 1 || m + k + 1 > n * n) fail('N・M・Kの範囲が不正です（Nは1〜200）。');
+    if (lines.length !== n + 1) fail(`盤面は${n}行必要です（現在${lines.length - 1}行）。`, Math.min(lines.length + 1, n + 2));
+    const cells = [], shops = [], factories = [];
+    const shopAt = new Int32Array(n * n).fill(-1), factoryAt = new Int32Array(n * n).fill(-1);
+    let shrine = null, shrineCount = 0;
+    for (let x = 0; x < n; x++) {
+      const row = lines[x + 1].trim();
+      if (row.length !== n) fail(`${x + 2}行目の長さが${row.length}です。${n}文字にしてください。`, x + 2);
+      if (!/^[.abc]+$/.test(row)) fail(`${x + 2}行目に . a b c 以外の文字があります。`, x + 2);
+      cells.push(row);
+      for (let y = 0; y < n; y++) {
+        const c = row[y], index = x * n + y;
+        if (c === 'a') { shopAt[index] = shops.length; shops.push({ x, y }); }
+        if (c === 'b') { factoryAt[index] = factories.length; factories.push({ x, y }); }
+        if (c === 'c') { shrine = { x, y }; shrineCount++; }
+      }
+    }
+    if (shops.length !== m) fail(`店 a の数がMと一致しません（M=${m}、盤面=${shops.length}）。`);
+    if (factories.length !== k) fail(`製麺所 b の数がKと一致しません（K=${k}、盤面=${factories.length}）。`);
+    if (shrineCount !== 1) fail(`神社 c は1か所必要です（現在${shrineCount}か所）。`);
+    return { n, m, k, cells, shops, factories, shrine, shopAt, factoryAt };
+  }
+  function parseOutput(text) {
+    const raw = clean(text);
+    if (!raw.trim()) return { empty: true, declared: 0, operations: [], error: null };
+    const lines = raw.split('\n'), head = lines[0].trim();
+    const errorAt = (message, index, line = index + 2) => ({ message, index, line, source: 'output' });
+    if (!integer(head) || Number(head) < 0 || Number(head) > MAX_OPS) return { empty: false, declared: 0, operations: [], error: errorAt('1行目のLは0〜100000の整数にしてください。', 0, 1) };
+    const declared = Number(head), operations = [];
+    let error = null;
+    for (let i = 0; i < Math.min(declared, lines.length - 1); i++) {
+      const tokens = lines[i + 1].trim().split(/\s+/);
+      if (tokens.length === 1 && integer(tokens[0]) && Number(tokens[0]) === 2) operations.push({ type: 2 });
+      else if (tokens.length === 3 && integer(tokens[0]) && Number(tokens[0]) === 1 && tokens.slice(1).every(integer)) operations.push({ type: 1, x: Number(tokens[1]), y: Number(tokens[2]) });
+      else { error = errorAt('操作は「1 x y」または「2」で指定してください。', i); break; }
+    }
+    if (!error && lines.length - 1 !== declared) {
+      const index = Math.min(declared, lines.length - 1);
+      error = errorAt(`L=${declared}に対し、操作行が${lines.length - 1}行あります。`, index, index + 2);
+    }
+    return { empty: false, declared, operations, error };
+  }
+  function power(d) { return Math.floor(Math.log2(d + 1)) + 1; }
+  function checkAction(board, state, op) {
+    if (op.type === 1) {
+      if (!Number.isSafeInteger(op.x) || !Number.isSafeInteger(op.y) || op.x < 0 || op.x >= board.n || op.y < 0 || op.y >= board.n) return '移動先が盤面の外です。';
+      const distance = Math.abs(state.x - op.x) + Math.abs(state.y - op.y), p = power(state.d);
+      if (distance > p) return `移動距離${distance}が移動力P=${p}を超えています。`;
+      return null;
+    }
+    if (op.type !== 2) return '不明な操作です。';
+    const cell = board.cells[state.x][state.y];
+    if (cell === '.') return '地面では操作2を実行できません。';
+    if (cell === 'b' && state.held >= 3) return '積載上限3個を超える受取です。';
+    if (cell === 'a' && state.held === 0) return 'うどんを持たずに納品しようとしています。';
+    if (cell === 'c' && state.held === 0) return 'うどんを持たずに祈願しようとしています。';
+    return null;
+  }
+  function simulate(board, parsed) {
+    const size = parsed.operations.length + 1;
+    const xs = new Int16Array(size), ys = new Int16Array(size), held = new Uint8Array(size), ds = new Uint32Array(size), served = new Uint32Array(size), kinds = new Uint8Array(size);
+    const firstDelivery = new Int32Array(board.m).fill(-1), deliveryTimes = Array.from({ length: board.m }, () => []);
+    let valid = 0, error = parsed.error;
+    for (let i = 0; i < parsed.operations.length; i++) {
+      const op = parsed.operations[i], state = { x: xs[i], y: ys[i], held: held[i], d: ds[i] };
+      const why = checkAction(board, state, op);
+      if (why) { error = { message: why, index: i, line: i + 2, source: 'output', operation: op }; break; }
+      const t = i + 1;
+      xs[t] = xs[i]; ys[t] = ys[i]; held[t] = held[i]; ds[t] = ds[i]; served[t] = served[i];
+      if (op.type === 1) { xs[t] = op.x; ys[t] = op.y; kinds[t] = 1; }
+      else {
+        const c = board.cells[state.x][state.y];
+        if (c === 'b') { held[t]++; kinds[t] = 2; }
+        if (c === 'a') {
+          held[t]--; kinds[t] = 3;
+          const id = board.shopAt[state.x * board.n + state.y];
+          if (firstDelivery[id] === -1) { firstDelivery[id] = t; served[t]++; }
+          deliveryTimes[id].push(t);
+        }
+        if (c === 'c') { held[t]--; ds[t]++; kinds[t] = 4; }
+      }
+      valid = t;
+    }
+    return { board, parsed, xs, ys, held, ds, served, kinds, firstDelivery, deliveryTimes, maxT: valid, error, finalScore: error || parsed.empty ? null : (board.m - served[valid]) * 10000 + parsed.declared };
+  }
+  function seeded(seed) {
+    let a = Number(seed) >>> 0;
+    return () => { a = (a + 0x9e3779b9) >>> 0; let z = a; z = Math.imul(z ^ (z >>> 16), 0x21f0aaad); z = Math.imul(z ^ (z >>> 15), 0x735a2d97); return (z ^ (z >>> 15)) >>> 0; };
+  }
+  function generate(seed) {
+    const next = seeded(seed), n = 100, total = n * n, pool = Array.from({ length: total }, (_, i) => i), selected = [];
+    for (let i = 0; i < 56; i++) {
+      const range = total - i, limit = Math.floor(4294967296 / range) * range;
+      let v; do { v = next(); } while (v >= limit);
+      const j = i + v % range; [pool[i], pool[j]] = [pool[j], pool[i]]; selected.push(pool[i]);
+    }
+    const cells = new Array(total).fill('.');
+    selected.forEach((p, i) => { cells[p] = i < 50 ? 'a' : i < 55 ? 'b' : 'c'; });
+    const rows = []; for (let x = 0; x < n; x++) rows.push(cells.slice(x * n, (x + 1) * n).join(''));
+    return '100 50 5\n' + rows.join('\n') + '\n';
+  }
+  const crcTable = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++) c = (c & 1) ? 0xedb88320 ^ (c >>> 1) : c >>> 1; crcTable[i] = c >>> 0; }
+  function crc32(bytes) { let c = 0xffffffff; for (const b of bytes) c = crcTable[(c ^ b) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
+  function zip(files) {
+    const encoder = new TextEncoder(), chunks = [], centers = []; let offset = 0, centralSize = 0;
+    for (const file of files) {
+      const name = encoder.encode(file.name), data = encoder.encode(file.text), crc = crc32(data);
+      const local = new Uint8Array(30 + name.length), l = new DataView(local.buffer);
+      l.setUint32(0, 0x04034b50, true); l.setUint16(4, 20, true); l.setUint16(6, 0x800, true); l.setUint16(12, 0x21, true); l.setUint32(14, crc, true); l.setUint32(18, data.length, true); l.setUint32(22, data.length, true); l.setUint16(26, name.length, true); local.set(name, 30);
+      const center = new Uint8Array(46 + name.length), c = new DataView(center.buffer);
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x800, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, offset, true); center.set(name, 46);
+      chunks.push(local, data); centers.push(center); offset += local.length + data.length; centralSize += center.length;
+    }
+    const end = new Uint8Array(22), e = new DataView(end.buffer);
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, centralSize, true); e.setUint32(16, offset, true);
+    const result = new Uint8Array(offset + centralSize + 22); let cursor = 0;
+    for (const chunk of [...chunks, ...centers, end]) { result.set(chunk, cursor); cursor += chunk.length; }
+    return result;
+  }
+  globalThis.UdonCore = { MAX_OPS, parseInput, parseOutput, checkAction, simulate, power, generate, zip };
+})();
+</script>
+<script id="udon-app">
+(() => {
+  'use strict';
+  const Core = globalThis.UdonCore, $ = id => document.getElementById(id), fmt = n => Number(n).toLocaleString('ja-JP');
+  const input = $('input'), output = $('output'), canvas = $('board'), viewport = $('boardViewport');
+  const sample = JSON.parse($('sample-data').textContent);
+  let trace = null, board = null, t = 0, selected = null, playing = false, raf = 0, lastFrame = 0, accumulator = 0, rebuildTimer = 0, toastTimer = 0, fileToken = 0;
+  let fileList = [], sourceName = 'solverの実行例（Seed生成とは別の入力です）', boardSize = 650;
+  const kindName = ['', '移動', '受取', '納品', '祈願'];
+  function toast(text) { $('toast').textContent = text; $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 2400); }
+  function pause() { playing = false; cancelAnimationFrame(raf); $('play').textContent = '▶ 再生'; $('play').setAttribute('aria-label', '再生'); }
+  function state() { return trace ? { x: trace.xs[t], y: trace.ys[t], held: trace.held[t], d: trace.ds[t] } : { x: 0, y: 0, held: 0, d: 0 }; }
+  function describe(index) {
+    const op = trace.parsed.operations[index]; if (!op) return '初期状態';
+    if (op.type === 1) return `移動 (${op.x}, ${op.y})`;
+    const tt = index + 1, k = trace.kinds[tt];
+    if (k === 2) return `受取 製麺所${board.factoryAt[trace.xs[tt] * board.n + trace.ys[tt]] + 1}`;
+    if (k === 3) return `納品 店${board.shopAt[trace.xs[tt] * board.n + trace.ys[tt]] + 1}`;
+    if (k === 4) return '祈願 神社';
+    return '操作 2';
+  }
+  function showNotice(message, type = 'error', source = 'output', line = null) {
+    $('notice').hidden = !message; $('notice').className = `panel notice ${type}`;
+    $('notice').setAttribute('role', type === 'error' ? 'alert' : 'status'); $('noticeText').textContent = message;
+    $('selectError').hidden = !line; $('selectError').dataset.source = source; $('selectError').dataset.line = line || '';
+    $('liveStatus').textContent = message || '';
+  }
+  function rebuild(target = 0) {
+    clearTimeout(rebuildTimer); pause(); $('manualFeedback').hidden = true;
+    try { board = Core.parseInput(input.value); }
+    catch (e) {
+      trace = null; board = null; t = 0; canvas.hidden = true; $('boardEmpty').hidden = false;
+      showNotice(`Input: ${e.message}`, 'error', 'input', e.line || 1);
+      $('statusBadge').className = 'status-badge invalid'; $('statusBadge').textContent = 'INPUT ERROR';
+      $('metricScore').textContent = '—'; $('metricServed').textContent = '—'; $('metricTime').textContent = '0';
+      $('finalScore').textContent = '—'; $('finalDetail').textContent = '有効なInputが必要です';
+      for (const id of ['heldValue', 'positionValue', 'donatedValue', 'powerValue', 'deliveredValue']) $(id).textContent = '—';
+      document.querySelectorAll('.bowl-slot').forEach(el => el.classList.remove('filled'));
+      $('upgradeBar').style.width = '0%'; $('deliveryBar').style.width = '0%';
+      $('upgradeLabel').textContent = '—'; $('remainingValue').textContent = '—'; $('cellDetail').textContent = '有効なInputが必要です';
+      $('validationSummary').textContent = 'Inputの形式を確認してください';
+      $('operationList').replaceChildren(); setControls(); return;
+    }
+    canvas.hidden = false; $('boardEmpty').hidden = true;
+    $('problemSize').textContent = `${board.n} × ${board.n} / 店 ${board.m} / 製麺所 ${board.k} / 積載上限 3`;
+    trace = Core.simulate(board, Core.parseOutput(output.value));
+    if (selected && (selected.x >= board.n || selected.y >= board.n)) selected = null;
+    $('sourceName').textContent = sourceName;
+    const err = trace.error;
+    if (err) showNotice(`WA · ${err.line === 1 ? '出力1行目' : `操作${fmt(err.index + 1)} / 出力${fmt(err.line)}行目`}: ${err.message} 有効な${fmt(trace.maxT)}操作まで表示します。`, 'error', 'output', err.line);
+    else if (!trace.parsed.empty && trace.served[trace.maxT] < board.m) showNotice(`操作は合法です。まだ${board.m - trace.served[trace.maxT]}店舗に配送していません。`, 'warning');
+    else showNotice('');
+    $('statusBadge').className = `status-badge ${err ? 'invalid' : trace.parsed.empty ? '' : trace.served[trace.maxT] === board.m ? 'valid' : 'partial'}`;
+    $('statusBadge').textContent = err ? 'WA' : trace.parsed.empty ? '出力未入力' : trace.served[trace.maxT] === board.m ? 'VALID · 全店納品' : 'VALID · 配送途中';
+    $('finalScore').textContent = err ? 'WA' : trace.finalScore === null ? '—' : fmt(trace.finalScore);
+    $('finalScore').style.color = err ? '#b53440' : '';
+    $('finalDetail').textContent = err ? `操作${fmt(err.index + 1)}で違反` : trace.parsed.empty ? '出力を読み込んでください' : `${fmt(trace.parsed.declared)}操作 / 配送 ${trace.served[trace.maxT]} / ${board.m}`;
+    $('validationSummary').textContent = err ? `有効 ${fmt(trace.maxT)}操作 / 出力に違反あり` : trace.parsed.empty ? `${board.n}×${board.n} / 店 ${board.m} / 製麺所 ${board.k}` : `検証済み ${fmt(trace.maxT)}操作 / D=${trace.ds[trace.maxT]}`;
+    $('timeline').max = trace.maxT; $('time').max = trace.maxT;
+    $('timeTotal').textContent = `/ ${fmt(trace.maxT)}`;
+    setT(Math.min(target, trace.maxT)); resizeBoard(); setControls();
+  }
+  function setControls() {
+    const none = !trace, empty = none || trace.maxT === 0;
+    for (const id of ['play', 'timeline', 'time', 'first', 'prev', 'next', 'last']) $(id).disabled = empty;
+    $('exportPng').disabled = !board;
+    $('act').disabled = !trace || !$('manual').checked;
+    if (none) { $('timeline').max = 0; $('timeline').value = 0; $('time').value = 0; $('timeTotal').textContent = '/ 0'; }
+  }
+  function setT(value) {
+    if (!trace) return;
+    t = Math.max(0, Math.min(trace.maxT, Math.round(Number(value) || 0)));
+    $('timeline').value = t; $('time').value = t;
+    $('metricTime').textContent = fmt(t);
+    $('metricScore').textContent = fmt((board.m - trace.served[t]) * 10000 + t);
+    $('metricServed').textContent = `${trace.served[t]} / ${board.m}`;
+    $('heldValue').textContent = `${trace.held[t]} / 3`;
+    document.querySelectorAll('.bowl-slot').forEach((el, i) => el.classList.toggle('filled', i < trace.held[t]));
+    $('positionValue').textContent = `(${trace.xs[t]}, ${trace.ys[t]})`;
+    $('donatedValue').textContent = fmt(trace.ds[t]);
+    const p = Core.power(trace.ds[t]), nextD = 2 ** p - 1, prevD = 2 ** (p - 1) - 1;
+    $('powerValue').textContent = p;
+    $('upgradeBar').style.width = `${(trace.ds[t] - prevD) / (nextD - prevD) * 100}%`;
+    $('upgradeLabel').textContent = `あと${fmt(nextD - trace.ds[t])}回の祈願で P = ${p + 1} (D=${fmt(nextD)})`;
+    $('deliveredValue').textContent = `${trace.served[t]} / ${board.m}`;
+    $('deliveryBar').style.width = `${board.m ? trace.served[t] / board.m * 100 : 100}%`;
+    $('remainingValue').textContent = trace.served[t] === board.m ? 'すべての店に納品済み' : `未配送 ${board.m - trace.served[t]}店舗`;
+    renderOperations(); updateCellDetail(); drawBoard();
+  }
+  function renderOperations() {
+    const root = $('operationList'); root.replaceChildren(); if (!trace) return;
+    const start = Math.max(0, Math.min(t - 3, trace.maxT - 6)), end = Math.min(trace.maxT, start + 7);
+    if (t === 0) { const initial = document.createElement('button'); initial.type = 'button'; initial.className = 'current'; initial.textContent = 't = 0  初期状態'; initial.onclick = () => { pause(); setT(0); }; root.append(initial); }
+    for (let i = start; i < end; i++) {
+      const bt = document.createElement('button'); bt.type = 'button'; bt.className = i + 1 === t ? 'current' : i + 1 > t ? 'future' : '';
+      const no = document.createElement('span'); no.className = 'op-number'; no.textContent = `#${i + 1}`;
+      const label = document.createElement('span'); label.textContent = describe(i);
+      bt.append(no, label); bt.title = `t=${i + 1}: ${label.textContent}`; bt.onclick = () => { pause(); setT(i + 1); }; root.append(bt);
+    }
+    if (trace.error && end === trace.maxT) { const el = document.createElement('button'); el.type = 'button'; el.className = 'invalid'; el.textContent = `#${trace.error.index + 1}  違反: ${trace.error.message}`; el.onclick = () => { pause(); setT(trace.maxT); }; root.append(el); }
+  }
+  function updateCellDetail() {
+    const el = $('cellDetail');
+    if (!selected || !board || !trace) { el.textContent = 'マスをクリックすると施設と納品状況を確認できます'; return; }
+    const { x, y } = selected, c = board.cells[x][y], index = x * board.n + y;
+    let text = `(${x}, ${y}) · `;
+    if (c === '.') text += '地面';
+    if (c === 'b') text += `製麺所 ${board.factoryAt[index] + 1}`;
+    if (c === 'c') text += '神社';
+    if (c === 'a') { const id = board.shopAt[index], first = trace.firstDelivery[id]; text += `店 ${id + 1} · ${first !== -1 && first <= t ? `納品済み (初回 t=${first})` : '未配送'}`; }
+    el.textContent = text;
+  }
+  function resizeBoard() {
+    if (!board) return;
+    boardSize = Math.max(250, Math.floor(viewport.clientWidth * Number($('zoom').value)));
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.style.width = boardSize + 'px'; canvas.style.height = boardSize + 'px';
+    canvas.width = Math.round(boardSize * dpr); canvas.height = Math.round(boardSize * dpr);
+    drawBoard();
+  }
+  function paintBoard(ctx, size, selectedCell = selected) {
+    const margin = size < 400 ? 24 : 30, cell = (size - margin * 2) / board.n, span = cell * board.n;
+    const cx = y => margin + (y + .5) * cell, cy = x => margin + (x + .5) * cell;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
+    ctx.save(); ctx.beginPath(); ctx.rect(margin, margin, span, span); ctx.clip();
+    if ($('showRange').checked) {
+      const x = trace.xs[t], y = trace.ys[t], p = Core.power(trace.ds[t]); ctx.fillStyle = '#e2edff';
+      for (let dx = -p; dx <= p; dx++) for (let dy = -(p - Math.abs(dx)); dy <= p - Math.abs(dx); dy++) {
+        const a = x + dx, b = y + dy; if (a >= 0 && a < board.n && b >= 0 && b < board.n) ctx.fillRect(margin + b * cell, margin + a * cell, cell, cell);
+      }
+    }
+    if (selectedCell) { ctx.fillStyle = '#fff3ce'; ctx.fillRect(margin + selectedCell.y * cell, margin + selectedCell.x * cell, cell, cell); }
+    ctx.strokeStyle = '#e9edf3'; ctx.lineWidth = .6;
+    const every = cell >= 4 ? 1 : 5;
+    ctx.beginPath(); for (let i = 0; i <= board.n; i += every) { const q = margin + i * cell; ctx.moveTo(margin, q); ctx.lineTo(margin + span, q); ctx.moveTo(q, margin); ctx.lineTo(q, margin + span); } ctx.stroke();
+    ctx.strokeStyle = '#cdd6e4'; ctx.lineWidth = .8; ctx.beginPath();
+    for (let i = 0; i <= board.n; i += 10) { const q = margin + i * cell; ctx.moveTo(margin, q); ctx.lineTo(margin + span, q); ctx.moveTo(q, margin); ctx.lineTo(q, margin + span); } ctx.stroke();
+    if ($('showTrail').checked && t > 0) {
+      ctx.strokeStyle = '#4e82d7a6'; ctx.lineWidth = Math.max(1.3, cell * .22); ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.beginPath();
+      for (let i = Math.max(0, t - 240); i <= t; i++) { const px = cx(trace.ys[i]), py = cy(trace.xs[i]); if (i === Math.max(0, t - 240)) ctx.moveTo(px, py); else ctx.lineTo(px, py); } ctx.stroke();
+    }
+    const marker = Math.max(4.5, Math.min(13, cell * .72));
+    for (let i = 0; i < board.shops.length; i++) {
+      const q = board.shops[i], x = cx(q.y), y = cy(q.x), done = trace.firstDelivery[i] !== -1 && trace.firstDelivery[i] <= t;
+      ctx.fillStyle = done ? '#34a57b' : '#fff0cf'; ctx.strokeStyle = done ? '#167353' : '#d78c24'; ctx.lineWidth = 1.2;
+      ctx.fillRect(x - marker / 2, y - marker / 2, marker, marker); ctx.strokeRect(x - marker / 2, y - marker / 2, marker, marker);
+      if (done && marker >= 6) { ctx.beginPath(); ctx.moveTo(x - marker * .27, y); ctx.lineTo(x - marker * .05, y + marker * .2); ctx.lineTo(x + marker * .3, y - marker * .23); ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1, marker * .13); ctx.stroke(); }
+      if ($('showIds').checked) { ctx.font = `${Math.max(10, Math.min(13, cell * .8))}px Consolas,monospace`; const label = String(i + 1), right = x + marker / 2 + 2, inward = right + ctx.measureText(label).width > margin + span; ctx.textAlign = inward ? 'right' : 'left'; const at = inward ? x - marker / 2 - 2 : right; ctx.textBaseline = 'bottom'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.strokeText(label, at, y); ctx.fillStyle = '#8e611b'; ctx.fillText(label, at, y); }
+    }
+    for (let i = 0; i < board.factories.length; i++) {
+      const q = board.factories[i], x = cx(q.y), y = cy(q.x), r = marker * .85;
+      ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fillStyle = '#15939e'; ctx.fill(); ctx.strokeStyle = '#0c6b77'; ctx.lineWidth = 1; ctx.stroke();
+      if ($('showIds').checked) { ctx.font = '11px Consolas,monospace'; const label = 'B' + (i + 1), right = x + r + 2, inward = right + ctx.measureText(label).width > margin + span; ctx.textAlign = inward ? 'right' : 'left'; const at = inward ? x - r - 2 : right; ctx.textBaseline = 'bottom'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.strokeText(label, at, y); ctx.fillStyle = '#0b7584'; ctx.fillText(label, at, y); }
+    }
+    { const x = cx(board.shrine.y), y = cy(board.shrine.x), r = marker * 1.05; ctx.strokeStyle = '#8057c9'; ctx.lineWidth = Math.max(1.6, marker * .25); ctx.lineCap = 'square'; ctx.beginPath(); ctx.moveTo(x - r, y - r * .65); ctx.lineTo(x + r, y - r * .65); ctx.moveTo(x - r * .8, y - r * .15); ctx.lineTo(x + r * .8, y - r * .15); ctx.moveTo(x - r * .55, y - r * .65); ctx.lineTo(x - r * .55, y + r * .8); ctx.moveTo(x + r * .55, y - r * .65); ctx.lineTo(x + r * .55, y + r * .8); ctx.stroke(); }
+    if (selectedCell) { ctx.strokeStyle = '#b38920'; ctx.lineWidth = 1.8; ctx.strokeRect(margin + selectedCell.y * cell, margin + selectedCell.x * cell, cell, cell); }
+    { const x = cx(trace.ys[t]), y = cy(trace.xs[t]), r = Math.max(4, Math.min(9, cell * .48)); ctx.beginPath(); ctx.arc(x, y, r + 3, 0, Math.PI * 2); ctx.fillStyle = '#91b4f278'; ctx.fill(); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = '#2864e8'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+    ctx.restore();
+    ctx.strokeStyle = '#aebbd0'; ctx.lineWidth = 1; ctx.strokeRect(margin, margin, span, span);
+    ctx.fillStyle = '#71829c'; ctx.font = '10px Consolas,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const tick = board.n <= 20 ? Math.max(1, Math.ceil(board.n / 10)) : 10;
+    for (let i = 0; i < board.n; i += tick) { ctx.fillText(String(i), cx(i), margin - 10); ctx.fillText(String(i), margin - 13, cy(i)); }
+    ctx.fillText(String(board.n - 1), cx(board.n - 1), margin - 10); ctx.fillText(String(board.n - 1), margin - 13, cy(board.n - 1));
+    ctx.textAlign = 'right'; ctx.fillStyle = '#4c6689'; ctx.font = '11px system-ui,sans-serif'; ctx.fillText('y →', margin + span, margin + span + 15); ctx.textAlign = 'left'; ctx.fillText('x ↓', 2, margin + span + 15);
+  }
+  function drawBoard() {
+    if (!board || !trace || !canvas.width) return;
+    const ctx = canvas.getContext('2d'), ratio = canvas.width / boardSize; ctx.setTransform(ratio, 0, 0, ratio, 0, 0); paintBoard(ctx, boardSize);
+    canvas.setAttribute('aria-label', `${board.n}×${board.n}の盤面。t=${t}、現在座標(${trace.xs[t]},${trace.ys[t]})、手持ち${trace.held[t]}、祈願D=${trace.ds[t]}、配送${trace.served[t]}/${board.m}。`);
+  }
+  function speed() { return Math.round(2 ** (Number($('speed').value) / 10)); }
+  function frame(now) {
+    if (!playing || !trace) return;
+    accumulator += Math.min(.25, (now - lastFrame) / 1000) * speed(); lastFrame = now;
+    const steps = Math.floor(accumulator);
+    if (steps) { accumulator -= steps; setT(t + steps); }
+    if (t >= trace.maxT) { pause(); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  function togglePlay() {
+    if (!trace || !trace.maxT) return;
+    if (playing) { pause(); return; }
+    if (t === trace.maxT) setT(0);
+    playing = true; accumulator = 0; lastFrame = performance.now(); $('play').textContent = 'Ⅱ 停止'; $('play').setAttribute('aria-label', '停止'); raf = requestAnimationFrame(frame);
+  }
+  function appendManual(op) {
+    if (!trace || !$('manual').checked) return;
+    pause();
+    if (t >= Core.MAX_OPS) { $('manualFeedback').textContent = '操作数は100000以下にしてください。'; $('manualFeedback').hidden = false; return; }
+    const why = Core.checkAction(board, state(), op);
+    if (why) { $('manualFeedback').textContent = why; $('manualFeedback').hidden = false; return; }
+    const ops = trace.parsed.operations.slice(0, t); ops.push(op);
+    output.value = ops.length + '\n' + ops.map(a => a.type === 1 ? `1 ${a.x} ${a.y}` : '2').join('\n') + '\n';
+    sourceName = '手動で編集した出力'; rebuild(ops.length);
+  }
+  function download(name, content, type = 'text/plain;charset=utf-8') {
+    const blob = content instanceof Blob ? content : new Blob([content], { type }), link = document.createElement('a'), url = URL.createObjectURL(blob);
+    link.href = url; link.download = name; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+  async function copy(el) {
+    try { if (!navigator.clipboard?.writeText) throw new Error(); await navigator.clipboard.writeText(el.value); }
+    catch { const start = el.selectionStart, end = el.selectionEnd; el.focus(); el.select(); if (!document.execCommand('copy')) { toast('選択したテキストをCtrl+Cでコピーしてください'); return; } el.setSelectionRange(start, end); }
+    toast('コピーしました');
+  }
+  function validSeed() { const s = Number($('seed').value); if (!Number.isInteger(s) || s < 0 || s > 4294967295 || $('seed').value === '') { toast('Seedは0〜4294967295の整数にしてください'); return null; } return s; }
+  function loadSample() { fileToken++; clearTimeout(rebuildTimer); input.value = sample.input; output.value = sample.output; sourceName = 'solverの実行例（Seed生成とは別の入力です）'; selected = null; rebuild(); }
+  async function loadOutputFile(index) {
+    if (!fileList[index]) return;
+    const token = ++fileToken, file = fileList[index];
+    if (file.size > 4000000) { toast('4MB以下の出力ファイルを選択してください'); return; }
+    try { const text = await file.text(); if (token !== fileToken) return; output.value = text; sourceName = `出力: ${file.webkitRelativePath || file.name}（対応するInputも確認してください）`; rebuild(); }
+    catch { toast('出力ファイルを読み込めませんでした'); }
+  }
+  function chooseOutputs(files) {
+    fileList = [...files].filter(f => !f.name.startsWith('.') && !f.webkitRelativePath.split('/').some(s => s.startsWith('.')) && f.size <= 4000000 && (/\.(txt|out|ans)$/i.test(f.name) || !f.name.includes('.'))).sort((a, b) => a.name.localeCompare(b.name, 'ja', { numeric: true }));
+    $('outputSelect').replaceChildren();
+    if (!fileList.length) { $('outputSelect').append(new Option('対象の出力ファイルがありません', '')); $('outputSelect').disabled = true; toast('txt / out / ans のファイルを選択してください'); return; }
+    fileList.forEach((f, i) => $('outputSelect').append(new Option(f.webkitRelativePath || f.name, String(i)))); $('outputSelect').disabled = false; loadOutputFile(0);
+  }
+  $('sample').addEventListener('click', loadSample);
+  $('problemLink').addEventListener('click', () => { $('problem').open = !$('problem').open; });
+  for (const el of [input, output]) el.addEventListener('input', () => { pause(); sourceName = '入力・出力を直接編集'; clearTimeout(rebuildTimer); rebuildTimer = setTimeout(() => rebuild(), 250); });
+  $('generate').addEventListener('click', () => { const seed = validSeed(); if (seed === null) return; fileToken++; input.value = Core.generate(seed); output.value = ''; selected = null; sourceName = `このページで生成した入力 / Seed ${seed}`; rebuild(); toast(`Seed ${seed} の入力を生成しました`); });
+  $('batch').addEventListener('click', async () => {
+    const seed = validSeed(), count = Number($('caseCount').value);
+    if (seed === null) return;
+    if (!Number.isInteger(count) || count < 1 || count > 1000) { toast('#casesは1〜1000にしてください'); return; }
+    $('batch').disabled = true; $('batch').textContent = '生成中…';
+    try {
+      const files = [];
+      for (let i = 0; i < count; i++) {
+        const s = (seed + i) >>> 0; files.push({ name: `${s}.txt`, text: Core.generate(s) });
+        if (i % 25 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+      }
+      download(`udon-inputs-${seed}-${count}.zip`, Core.zip(files), 'application/zip'); toast(`${count}件の入力を保存しました`);
+    } catch { toast('入力の一括保存に失敗しました。件数を減らして試してください'); }
+    finally { $('batch').disabled = false; $('batch').textContent = '一括保存'; }
+  });
+  $('inputOpen').onclick = () => { $('inputFile').value = ''; $('inputFile').click(); };
+  $('outputOpen').onclick = () => { $('outputFile').value = ''; $('outputFile').click(); };
+  $('directoryOpen').onclick = () => { $('outputDirectory').value = ''; $('outputDirectory').click(); };
+  $('inputFile').onchange = async e => { const file = e.target.files[0]; if (!file) return; if (file.size > 1000000) { toast('1MB以下の入力ファイルを選択してください'); return; } try { input.value = await file.text(); sourceName = `入力: ${file.name}`; selected = null; rebuild(); } catch { toast('入力ファイルを読み込めませんでした'); } };
+  $('outputFile').onchange = e => chooseOutputs(e.target.files);
+  $('outputDirectory').onchange = e => chooseOutputs(e.target.files);
+  $('outputSelect').onchange = e => loadOutputFile(Number(e.target.value));
+  $('copyInput').onclick = () => copy(input); $('copyOutput').onclick = () => copy(output);
+  $('saveInput').onclick = () => download('input.txt', input.value); $('saveOutput').onclick = () => download('output.txt', output.value);
+  $('selectError').onclick = () => { const el = $('selectError').dataset.source === 'input' ? input : output, line = Number($('selectError').dataset.line), rows = el.value.replace(/\r\n?/g, '\n').split('\n'); let offset = 0; for (let i = 0; i < Math.min(line - 1, rows.length); i++) offset += rows[i].length + 1; el.focus(); el.setSelectionRange(Math.min(offset, el.value.length), Math.min(offset + (rows[line - 1]?.length || 0), el.value.length)); el.scrollTop = Math.max(0, (line - 3) * parseFloat(getComputedStyle(el).lineHeight)); };
+  $('play').onclick = togglePlay;
+  $('first').onclick = () => { pause(); setT(0); }; $('last').onclick = () => { pause(); if (trace) setT(trace.maxT); };
+  $('prev').onclick = () => { pause(); setT(t - 1); }; $('next').onclick = () => { pause(); setT(t + 1); };
+  $('timeline').oninput = e => { pause(); setT(e.target.value); }; $('time').oninput = e => { pause(); setT(e.target.value); };
+  $('speed').oninput = () => { $('speedValue').textContent = `${fmt(speed())} 操作/秒`; };
+  for (const id of ['showTrail', 'showRange', 'showIds']) $(id).onchange = drawBoard;
+  $('zoom').onchange = resizeBoard;
+  $('manual').onchange = () => { pause(); $('manualFeedback').hidden = true; setControls(); $('manual').blur(); $('boardHint').textContent = $('manual').checked ? '手動操作中: マスクリックで移動 / 矢印キーで1マス / Shift+矢印でPマス / Enter・Spaceで操作2' : '左上 (0,0) / 下がx、右がy / クリックでマスの情報を表示'; };
+  $('act').onclick = () => appendManual({ type: 2 });
+  canvas.addEventListener('click', e => { if (!trace || !board) return; const rect = canvas.getBoundingClientRect(), margin = boardSize < 400 ? 24 : 30, cell = (boardSize - margin * 2) / board.n, x = Math.floor(((e.clientY - rect.top) * boardSize / rect.height - margin) / cell), y = Math.floor(((e.clientX - rect.left) * boardSize / rect.width - margin) / cell); if (x < 0 || x >= board.n || y < 0 || y >= board.n) return; selected = { x, y }; if ($('manual').checked) appendManual({ type: 1, x, y }); updateCellDetail(); drawBoard(); });
+  document.addEventListener('keydown', e => {
+    if (e.target.closest('input,textarea,select,button,[contenteditable=true]') || e.ctrlKey || e.metaKey || e.altKey || !trace) return;
+    if ($('manual').checked) {
+      const directions = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+      if (directions[e.key]) { e.preventDefault(); const [dx, dy] = directions[e.key], step = e.shiftKey ? Core.power(trace.ds[t]) : 1; appendManual({ type: 1, x: trace.xs[t] + dx * step, y: trace.ys[t] + dy * step }); }
+      else if (e.key === 'Enter' || e.code === 'Space') { e.preventDefault(); appendManual({ type: 2 }); }
+    } else if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+    else if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) { e.preventDefault(); pause(); setT(e.key === 'Home' ? 0 : e.key === 'End' ? trace.maxT : t + (e.key === 'ArrowRight' ? 1 : -1)); }
+  });
+  $('exportPng').onclick = () => {
+    if (!trace || !board) return;
+    const image = document.createElement('canvas'); image.width = 1200; image.height = 1330; const ctx = image.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, image.width, image.height); ctx.fillStyle = '#253b5a'; ctx.font = '600 25px system-ui,sans-serif'; ctx.fillText('うどん配送 ビジュアライザ', 30, 39);
+    ctx.font = '18px system-ui,sans-serif'; ctx.fillStyle = '#526985'; ctx.fillText(`t=${fmt(t)}  配送 ${trace.served[t]}/${board.m}  手持ち ${trace.held[t]}/3  D=${trace.ds[t]}  P=${Core.power(trace.ds[t])}`, 30, 73);
+    ctx.save(); ctx.translate(0, 85); paintBoard(ctx, 1200); ctx.restore(); ctx.fillStyle = '#526985'; ctx.font = '16px system-ui,sans-serif'; ctx.fillText(`現在スコア ${(board.m - trace.served[t]) * 10000 + t}   座標 (${trace.xs[t]},${trace.ys[t]})   最終結果 ${trace.error ? 'WA' : trace.finalScore ?? '出力未入力'}`, 30, 1310);
+    image.toBlob(blob => { if (blob) download(`udon-t${t}.png`, blob); else toast('PNGを保存できませんでした'); }, 'image/png');
+  };
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+  new ResizeObserver(() => { if (board) resizeBoard(); }).observe(viewport);
+  loadSample();
+})();
+</script>
+</body>
+</html>
